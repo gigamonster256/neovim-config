@@ -1,4 +1,4 @@
-{vimPlugins}: {
+{pkgs, ...}: {
   imports = [
     ./options.nix
     ./keybinds.nix
@@ -29,7 +29,7 @@
     telescope.enable = true;
 
     lazy.plugins = let
-      inherit (vimPlugins) vim-sleuth oil-nvim nvim-web-devicons;
+      inherit (pkgs.vimPlugins) vim-sleuth oil-nvim nvim-web-devicons;
     in {
       vim-sleuth = {
         package = vim-sleuth;

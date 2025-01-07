@@ -24,8 +24,8 @@
     git-hooks,
     ...
   }: let
-    buildPkg = pkgs: modules: (nvf.lib.neovimConfiguration {inherit pkgs modules;}).neovim;
-    nvimConfig = pkgs: import ./config {inherit (pkgs) vimPlugins;};
+    nvimPkg = pkgs: modules: (nvf.lib.neovimConfiguration {inherit pkgs modules;}).neovim;
+    buildNvim = pkgs: nvimPkg pkgs [(import ./config)];
   in
     flake-parts.lib.mkFlake {inherit inputs;} {
       systems = import systems;
@@ -40,7 +40,7 @@
         lib,
         ...
       }: let
-        neovim = buildPkg pkgs [(nvimConfig pkgs)];
+        neovim = buildNvim pkgs;
         neovim-app = lib.meta.getExe neovim;
       in {
         formatter = pkgs.alejandra;
@@ -60,7 +60,7 @@
       };
 
       flake.overlays.default = _final: prev: {
-        neovim = buildPkg prev [(nvimConfig prev)];
+        neovim = buildNvim prev;
       };
     };
 }
