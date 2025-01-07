@@ -1,0 +1,1 @@
+`nix run github:gigamonster256/neovim-config/nvf`
