@@ -4,12 +4,13 @@
     ./keybinds.nix
     ./theme.nix
     ./lsp.nix
+    ./assistant.nix
+    ./visuals.nix
   ];
 
   vim = {
     viAlias = true;
     vimAlias = true;
-    disableArrows = true;
 
     globals = {
       mapleader = " ";
@@ -27,21 +28,13 @@
     binds.whichKey.enable = true;
 
     telescope.enable = true;
+    utility.oil-nvim.enable = true;
 
     lazy.plugins = let
-      inherit (pkgs.vimPlugins) vim-sleuth oil-nvim nvim-web-devicons;
+      inherit (pkgs.vimPlugins) vim-sleuth;
     in {
       vim-sleuth = {
         package = vim-sleuth;
-      };
-
-      "oil.nvim" = {
-        package = oil-nvim;
-        setupModule = "oil";
-      };
-
-      nvim-web-devicons = {
-        package = nvim-web-devicons;
       };
     };
 

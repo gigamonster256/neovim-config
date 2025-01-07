@@ -4,7 +4,6 @@
     searchCase = "smart";
     lineNumberMode = "relNumber";
     undoFile.enable = true;
-    showSignColumn = true;
     options = {
       mouse = "a";
 
