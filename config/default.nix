@@ -26,6 +26,8 @@
 
     binds.whichKey.enable = true;
 
+    telescope.enable = true;
+
     lazy.plugins = let
       inherit (vimPlugins) vim-sleuth oil-nvim nvim-web-devicons;
     in {
