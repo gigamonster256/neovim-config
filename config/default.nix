@@ -1,4 +1,5 @@
-{pkgs, ...}: {
+{ pkgs, ... }:
+{
   imports = [
     ./options.nix
     ./keybinds.nix
@@ -30,18 +31,18 @@
     telescope.enable = true;
     utility.oil-nvim.enable = true;
 
-    lazy.plugins = let
-      inherit (pkgs.vimPlugins) vim-sleuth;
-    in {
-      vim-sleuth = {
-        package = vim-sleuth;
+    lazy.plugins =
+      let
+        inherit (pkgs.vimPlugins) vim-sleuth;
+      in
+      {
+        vim-sleuth = {
+          package = vim-sleuth;
+        };
       };
-    };
 
     luaConfigRC.autocmds =
-      /*
-      lua
-      */
+      # lua
       ''
         vim.api.nvim_create_autocmd('TextYankPost', {
           desc = 'Highlight when yanking (copying) text',

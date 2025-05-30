@@ -1,5 +1,5 @@
 {
-    vim.visuals = {
-        nvim-web-devicons.enable = true;
-    };
+  vim.visuals = {
+    nvim-web-devicons.enable = true;
+  };
 }

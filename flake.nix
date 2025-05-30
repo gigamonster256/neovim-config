@@ -17,47 +17,52 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
-  outputs = inputs @ {
-    systems,
-    flake-parts,
-    nvf,
-    git-hooks,
-    ...
-  }: let
-    nvimPkg = pkgs: modules: (nvf.lib.neovimConfiguration {inherit pkgs modules;}).neovim;
-    buildNvim = pkgs: nvimPkg pkgs [(import ./config)];
-  in
-    flake-parts.lib.mkFlake {inherit inputs;} {
+  outputs =
+    inputs@{
+      systems,
+      flake-parts,
+      nvf,
+      git-hooks,
+      ...
+    }:
+    let
+      nvimPkg = pkgs: modules: (nvf.lib.neovimConfiguration { inherit pkgs modules; }).neovim;
+      buildNvim = pkgs: nvimPkg pkgs [ (import ./config) ];
+    in
+    flake-parts.lib.mkFlake { inherit inputs; } {
       systems = import systems;
 
       imports = [
         git-hooks.flakeModule
       ];
 
-      perSystem = {
-        config,
-        pkgs,
-        lib,
-        ...
-      }: let
-        neovim = buildNvim pkgs;
-        neovim-app = lib.meta.getExe neovim;
-      in {
-        formatter = pkgs.alejandra;
+      perSystem =
+        {
+          config,
+          pkgs,
+          lib,
+          ...
+        }:
+        let
+          neovim = buildNvim pkgs;
+          neovim-app = lib.meta.getExe neovim;
+        in
+        {
+          # formatter = pkgs.nixfmt-rfc-style;
 
-        pre-commit.settings.hooks.alejandra.enable = true;
-        devShells.default = config.pre-commit.devShell;
+          # pre-commit.settings.hooks.alejandra.enable = true;
+          devShells.default = config.pre-commit.devShell;
 
-        packages = {
-          inherit neovim;
-          default = neovim;
+          packages = {
+            inherit neovim;
+            default = neovim;
+          };
+
+          apps = {
+            neovim.program = neovim-app;
+            default.program = neovim-app;
+          };
         };
-
-        apps = {
-          neovim.program = neovim-app;
-          default.program = neovim-app;
-        };
-      };
 
       flake.overlays.default = _final: prev: {
         neovim = buildNvim prev;
