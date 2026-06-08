@@ -2,70 +2,34 @@
   description = "Neovim config";
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    systems.url = "github:nix-systems/default";
-    nvf = {
-      url = "github:NotAShelf/nvf";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-parts.follows = "flake-parts";
-    };
-    flake-parts = {
-      url = "github:hercules-ci/flake-parts";
-      inputs.nixpkgs-lib.follows = "nixpkgs";
-    };
-    git-hooks = {
-      url = "github:cachix/git-hooks.nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    nvf.url = "github:NotAShelf/nvf";
+    nvf.inputs.nixpkgs.follows = "nixpkgs";
+    nvf.inputs.flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs";
   };
   outputs =
-    inputs@{
-      systems,
-      flake-parts,
+    {
+      self,
+      nixpkgs,
       nvf,
-      git-hooks,
       ...
-    }:
+    }@inputs:
     let
-      nvimPkg = pkgs: modules: (nvf.lib.neovimConfiguration { inherit pkgs modules; }).neovim;
-      buildNvim = pkgs: nvimPkg pkgs [ (import ./config) ];
-    in
-    flake-parts.lib.mkFlake { inherit inputs; } {
-      systems = import systems;
-
-      imports = [
-        git-hooks.flakeModule
+      inherit (nixpkgs) lib;
+      systems = [
+        "x86_64-linux"
+        "aarch64-darwin"
       ];
-
-      perSystem =
-        {
-          config,
-          pkgs,
-          lib,
-          ...
-        }:
-        let
-          neovim = buildNvim pkgs;
-          neovim-app = lib.meta.getExe neovim;
-        in
-        {
-          # formatter = pkgs.nixfmt-rfc-style;
-
-          # pre-commit.settings.hooks.alejandra.enable = true;
-          devShells.default = config.pre-commit.devShell;
-
-          packages = {
-            inherit neovim;
-            default = neovim;
-          };
-
-          apps = {
-            neovim.program = neovim-app;
-            default.program = neovim-app;
-          };
-        };
-
-      flake.overlays.default = _final: prev: {
-        neovim = buildNvim prev;
+      forEachSystem = f: lib.genAttrs systems (system: f nixpkgs.legacyPackages.${system});
+      nvimPkg = pkgs: (nvf.lib.neovimConfiguration { inherit pkgs; modules = [ (import ./config) ]; }).neovim;
+    in
+    {
+      formatter = forEachSystem (pkgs: pkgs.nixfmt-tree);
+      packages = forEachSystem (pkgs: rec {
+        default = neovim;
+        neovim = nvimPkg pkgs;
+      });
+      overlays.default = final: prev: {
+        neovim = nvimPkg final;
       };
     };
 }
