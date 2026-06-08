@@ -1,6 +1,6 @@
 {
   vim = {
-    useSystemClipboard = true;
+    clipboard.registers = "unnamedplus";
     searchCase = "smart";
     lineNumberMode = "relNumber";
     undoFile.enable = true;

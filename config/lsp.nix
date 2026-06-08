@@ -1,20 +1,20 @@
 {
   vim = {
     languages = {
-      enableLSP = true;
       enableFormat = true;
       enableTreesitter = true;
       enableExtraDiagnostics = true;
 
       nix = {
         enable = true;
-        format.type = "nixfmt";
+        format.type = ["nixfmt"];
       };
       markdown.enable = true;
       lua.enable = true;
     };
 
     lsp = {
+      enable = true;
       formatOnSave = true;
       # lspkind.enable = false;
       # lightbulb.enable = true;
